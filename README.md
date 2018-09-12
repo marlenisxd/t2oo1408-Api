@@ -68,6 +68,56 @@ $_SERVER
         ../img/
         index.php
 ```
+# Outros conceitos
+## Router e Rotas
+- Padrão ChainOfResponsability [https://sourcemaking.com/design_patterns/chain_of_responsibility]
+```
+/** as rotas são apontamentos, praticamente um índice que aponta para algum serviço. 
+o índice é a própria URL a partir da "url base" da aplicação ex.: http://localhost:8080/pessoa/listar.
+a base da url é http://localhost:8080, o restante é o que podemos utilizar como índice 
+-> /pessoa/listar essa string /pessoa/listar.
+Para agilidade, podemos criar uma classe para gerenciar as rotas, um roteador ou Router e assim, 
+a cada nova classe criada, basta registrarmos no nosso router a rota e fazermos nossa aplicação ao executar,
+solicitar ao router que a execute.
+**/
+   private static $routes = [];
+  //criando uma rota
+   $pattern = '/^' . str_replace('/', '\/', $route) . '$/';
+        if (isset(self::$routes[$route])) {
+            throw new Exception(" a rota {$route} já existe!");
+        }
+        self::$routes[$pattern] = $callback;
+  //executando uma rota
+          $uri = isset($request['uri']) ? $request['uri'] : "";
+        foreach (self::$routes as $pattern => $callback) {
+            if (preg_match($pattern, $uri,$pars)) {
+                array_shift($pars);
+                return call_user_func_array($callback,array_values($pars));
+            }
+        }
+  //usando o router
+ Router::createRoute("/pessoa/listar/(\w+)/([0-9]+)", function($x,$y) {
+    echo "Rota executada" ;  
+ });
+ Router::execute($req);
+```
+## Http
+### documentação 
+- w3c [https://www.w3.org/Protocols/]
+- mozila [https://developer.mozilla.org/en-US/docs/Web/HTTP]
+### autenticação básica
+```
+    //enviar no header base64Encoded -> id:pwd
+    Authorization: Basic dGVzdGU6MTIz
+    // no php
+    // solicitando autenticação 
+    header('WWW-Authenticate: Basic realm="' . utf8_decode($text) . '"');
+    // negando acesso
+    header('HTTP/1.0 401 Unauthorized');
+    // variáveis
+    // PHP_AUTH_USER 
+    // PHP_AUTH_PW
+```
 # Informações importantes
 + segue o mesmo conceito das aulas anteriores
 + este projeto não será concluído em um único dia
